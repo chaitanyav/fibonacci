@@ -16,6 +16,15 @@ static VALUE cFibonacci;
 static VALUE id_plus;
 static VALUE id_lte;
 static VALUE id_lt;
+static VALUE id_pow; 
+static VALUE id_minus; 
+static VALUE id_fdiv; 
+static VALUE id_to_i; 
+static VALUE id_log10;
+static VALUE id_floor;
+static VALUE id_sqrt; 
+
+
 
 static VALUE
 fibonacci_init(VALUE self)
@@ -83,14 +92,6 @@ num_digits(VALUE self, VALUE i)
 		VALUE phi = ONE;
 		VALUE phi2 = ONE;
 		VALUE val = ZERO;
-		VALUE id_pow = rb_intern("**");
-		VALUE id_minus = rb_intern("-");
-		VALUE id_fdiv = rb_intern("fdiv");
-		VALUE id_to_i = rb_intern("to_i");
-		VALUE id_log10 = rb_intern("log10");
-		VALUE id_floor = rb_intern("floor");
-		VALUE id_sqrt = rb_intern("sqrt");
-
 
 		VALUE sqrt_5 = rb_funcall(rb_mMath, id_sqrt, 1, INT2NUM(5));
 
@@ -119,6 +120,13 @@ Init_fibonacci(void)
 	id_plus = rb_intern("+");
 	id_lte = rb_intern("<=");
 	id_lt = rb_intern("<");
+	id_pow = rb_intern("**");
+	id_minus = rb_intern("-");
+	id_fdiv = rb_intern("fdiv");
+	id_to_i = rb_intern("to_i");
+	id_log10 = rb_intern("log10");
+	id_floor = rb_intern("floor");
+	id_sqrt = rb_intern("sqrt");
 
 	cFibonacci = rb_define_class("Fibonacci", rb_cObject);
 	rb_define_method(cFibonacci, "initialize", fibonacci_init, 0);
