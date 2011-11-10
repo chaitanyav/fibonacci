@@ -23,7 +23,8 @@ static VALUE id_to_i;
 static VALUE id_log10;
 static VALUE id_floor;
 static VALUE id_sqrt; 
-
+static VALUE id_mul; 
+static VALUE id_eq; 
 
 
 static VALUE
@@ -44,7 +45,7 @@ print_num(VALUE self, VALUE num)
 static VALUE
 print(VALUE self, VALUE n)
 {
-	VALUE start = ONE;
+	VALUE start = ZERO;
 	VALUE fib_n_1 = ONE;
 	VALUE fib_n_2 = ONE;
 	VALUE fib_n = ZERO;
@@ -55,9 +56,13 @@ print(VALUE self, VALUE n)
 		return Qnil;
 	}
 
-	for(start; Qtrue == rb_funcall(start, id_lte, 1, n); start = rb_funcall(start, id_plus, 1, ONE))
+	for(start; Qtrue == rb_funcall(start, id_lt, 1, n); start = rb_funcall(start, id_plus, 1, ONE))
 	{
-		if(Qtrue == rb_funcall(start, id_lte, 1, INT2NUM(2)))
+		if(Qtrue == rb_funcall(start, id_eq, 1, ZERO))
+		{
+			print_num(self, ZERO);
+		}
+		else if(Qtrue == rb_funcall(start, id_lte, 1, TWO))
 		{
 			print_num(self, ONE);
 		}
@@ -82,7 +87,7 @@ index_of(VALUE self, VALUE val)
 static VALUE
 num_digits(VALUE self, VALUE i)
 {
-	if(NUM2INT(i) <= 0)
+	if(Qtrue == rb_funcall(i, id_lt, 1, ZERO))
 	{
 		rb_raise(rb_eArgError, "index cannot be negative");
 		return Qnil;
@@ -90,27 +95,24 @@ num_digits(VALUE self, VALUE i)
 	else
 	{
 		VALUE phi = ONE;
-		VALUE phi2 = ONE;
-		VALUE val = ZERO;
+		VALUE num_digits = ZERO;
+		VALUE log_sqrt_5 = ZERO;
 
 		VALUE sqrt_5 = rb_funcall(rb_mMath, id_sqrt, 1, INT2NUM(5));
+		log_sqrt_5 = rb_funcall(rb_mMath, id_log10, 1, sqrt_5);
 
 		phi = rb_funcall(phi, id_plus, 1, sqrt_5);
 		phi = rb_funcall(phi, id_fdiv, 1, TWO);
 
-		phi2 = rb_funcall(phi2, id_minus, 1, sqrt_5);
-		phi2 = rb_funcall(phi2, id_fdiv, 1, TWO);
-		phi2 = rb_funcall(phi2, id_pow, 1, i);
+		num_digits = rb_funcall(rb_mMath, id_log10, 1, phi);
+		num_digits = rb_funcall(num_digits, id_mul, 1, i);
+		num_digits = rb_funcall(num_digits, id_minus, 1, log_sqrt_5);
 
-		phi = rb_funcall(phi, id_pow, 1, i);
-		val = rb_funcall(phi, id_minus, 1, phi2);
-		val = rb_funcall(val, id_fdiv, 1, sqrt_5);
-		val = rb_funcall(val, id_floor, 0);
-		val = rb_funcall(rb_mMath, id_log10, 1, val);
-		val = rb_funcall(val, id_plus, 1, ONE);
-		val = rb_funcall(val, id_to_i, 0);
+		num_digits = rb_funcall(num_digits, id_floor, 0);
+		num_digits = rb_funcall(num_digits, id_plus, 1, ONE);
+		num_digits = rb_funcall(num_digits, id_to_i, 0);
 
-		return val;
+		return num_digits;
 	}
 }
 
@@ -121,12 +123,14 @@ Init_fibonacci(void)
 	id_lte = rb_intern("<=");
 	id_lt = rb_intern("<");
 	id_pow = rb_intern("**");
+	id_mul = rb_intern("*");
 	id_minus = rb_intern("-");
 	id_fdiv = rb_intern("fdiv");
 	id_to_i = rb_intern("to_i");
 	id_log10 = rb_intern("log10");
 	id_floor = rb_intern("floor");
 	id_sqrt = rb_intern("sqrt");
+	id_eq = rb_intern("==");
 
 	cFibonacci = rb_define_class("Fibonacci", rb_cObject);
 	rb_define_method(cFibonacci, "initialize", fibonacci_init, 0);
