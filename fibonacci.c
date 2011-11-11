@@ -13,18 +13,18 @@
 #define TWO INT2NUM(2)
 
 static VALUE cFibonacci;
-static VALUE id_plus;
-static VALUE id_lte;
-static VALUE id_lt;
-static VALUE id_pow; 
-static VALUE id_minus; 
-static VALUE id_fdiv; 
-static VALUE id_to_i; 
-static VALUE id_log10;
-static VALUE id_floor;
-static VALUE id_sqrt; 
-static VALUE id_mul; 
-static VALUE id_eq; 
+static ID id_plus;
+static ID id_lte;
+static ID id_lt;
+static ID id_pow;
+static ID id_minus;
+static ID id_fdiv;
+static ID id_to_i;
+static ID id_log10;
+static ID id_floor;
+static ID id_sqrt;
+static ID id_mul;
+static ID id_eq;
 
 
 static VALUE
