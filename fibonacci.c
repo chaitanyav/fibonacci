@@ -43,6 +43,42 @@ print_num(VALUE self, VALUE num)
 }
 
 static VALUE
+terms(VALUE self, VALUE n)
+{
+  long ary_len = NUM2LONG(n);
+  long i;
+  VALUE ary = Qnil;
+
+  if(ary_len < 0)
+  {
+    rb_raise(rb_eArgError, "num terms cannot be negative");
+    return ary;
+  }
+
+  ary = rb_ary_new2(ary_len);
+
+  for(i=0; i < ary_len; i++)
+  {
+    if(i == 0)
+    {
+      rb_ary_store(ary, i, ZERO);
+    }
+    if((i > 0))
+    {
+      if(i <= 2)
+      {
+        rb_ary_store(ary, i, ONE);
+      }
+      else
+      {
+        rb_ary_store(ary, i, rb_funcall(rb_ary_entry(ary, i-1), id_plus, 1, rb_ary_entry(ary, i-2)));
+      }
+    }
+  }
+  return ary;
+}
+
+static VALUE
 print(VALUE self, VALUE n)
 {
 	VALUE start = ZERO;
@@ -136,6 +172,6 @@ Init_fibonacci(void)
 	rb_define_method(cFibonacci, "initialize", fibonacci_init, 0);
 	rb_define_private_method(cFibonacci, "print_num", print_num, 1);
 	rb_define_method(cFibonacci, "print", print, 1);
-	rb_define_method(cFibonacci, "index_of", index_of, 1);
+	rb_define_method(cFibonacci, "terms", terms, 1);
 	rb_define_method(cFibonacci, "num_digits", num_digits, 1);
 }
