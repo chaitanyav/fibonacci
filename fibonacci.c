@@ -227,5 +227,5 @@ Init_fibonacci(void)
 	rb_define_method(cFibonacci, "print", print, 1);
 	rb_define_method(cFibonacci, "terms", terms, 1);
 	rb_define_method(cFibonacci, "num_digits", num_digits, 1);
-	rb_define_method(cFibonacci, "val", val, 1);
+	rb_define_method(cFibonacci, "[]", val, 1);
 }
