@@ -128,7 +128,7 @@ print(VALUE self, VALUE n)
 {
 	VALUE start = ZERO;
 	VALUE fib_n_1 = ONE;
-	VALUE fib_n_2 = ONE;
+	VALUE fib_n_2 = ZERO;
 	VALUE fib_n = ZERO;
 
 	if(TYPE(n) != T_FIXNUM)
@@ -143,7 +143,7 @@ print(VALUE self, VALUE n)
 		{
 			print_num(self, ZERO);
 		}
-		else if(Qtrue == rb_funcall(start, id_lte, 1, TWO))
+		else if(Qtrue == rb_funcall(start, id_eq, 1, ONE))
 		{
 			print_num(self, ONE);
 		}
@@ -168,6 +168,12 @@ index_of(VALUE self, VALUE val)
 static VALUE
 num_digits(VALUE self, VALUE i)
 {
+	if(TYPE(i) != T_FIXNUM)
+	{
+		rb_raise(rb_eArgError, "Invalid argument for type Fixnum");
+		return Qnil;
+	}
+
 	if(Qtrue == rb_funcall(i, id_lt, 1, ZERO))
 	{
 		rb_raise(rb_eArgError, "index cannot be negative");
