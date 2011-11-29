@@ -15,10 +15,12 @@
 static VALUE cFibonacci;
 static ID id_plus;
 static ID id_lte;
+static ID id_gte;
 static ID id_lt;
 static ID id_pow;
 static ID id_minus;
 static ID id_fdiv;
+static ID id_div;
 static ID id_to_i;
 static ID id_log10;
 static ID id_floor;
@@ -40,6 +42,49 @@ print_num(VALUE self, VALUE num)
 	char *cptr = StringValuePtr(num_str);
 	printf("%s\n", cptr);
 	return Qnil;
+}
+
+static VALUE
+val(VALUE self, VALUE n)
+{
+	VALUE start = ZERO;
+	VALUE fib_n_1 = ONE;
+	VALUE fib_n_2 = ZERO;
+	VALUE fib_n = ZERO;
+
+	if(TYPE(n) != T_FIXNUM)
+	{
+		rb_raise(rb_eArgError, "Invalid argument for type Fixnum");
+		return Qnil;
+	}
+
+	if(Qtrue == rb_funcall(n, id_lt, 1, ZERO))
+	{
+		rb_raise(rb_eArgError, "index cannot be negative");
+		return Qnil;
+	}
+	else
+	{
+
+	for(start; Qtrue == rb_funcall(start, id_lte, 1, n); start = rb_funcall(start, id_plus, 1, ONE))
+	{
+		if(Qtrue == rb_funcall(start, id_eq, 1, ZERO))
+		{
+			fib_n = ZERO;
+		}
+		else if(Qtrue == rb_funcall(start, id_eq, 1, ONE))
+		{
+			fib_n = ONE;
+		}
+		else
+		{
+			fib_n = rb_funcall(fib_n_1, id_plus, 1, fib_n_2);
+			fib_n_2 = fib_n_1;
+			fib_n_1 = fib_n;
+		}
+	}
+	}
+  return fib_n;
 }
 
 static VALUE
@@ -158,10 +203,12 @@ Init_fibonacci(void)
 	id_plus = rb_intern("+");
 	id_lte = rb_intern("<=");
 	id_lt = rb_intern("<");
+        id_gte = rb_intern(">=");
 	id_pow = rb_intern("**");
 	id_mul = rb_intern("*");
 	id_minus = rb_intern("-");
 	id_fdiv = rb_intern("fdiv");
+	id_div = rb_intern("/");
 	id_to_i = rb_intern("to_i");
 	id_log10 = rb_intern("log10");
 	id_floor = rb_intern("floor");
@@ -174,4 +221,5 @@ Init_fibonacci(void)
 	rb_define_method(cFibonacci, "print", print, 1);
 	rb_define_method(cFibonacci, "terms", terms, 1);
 	rb_define_method(cFibonacci, "num_digits", num_digits, 1);
+	rb_define_method(cFibonacci, "val", val, 1);
 }
