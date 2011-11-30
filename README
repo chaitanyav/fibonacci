@@ -1,1 +1,1 @@
-Fibonacci is a Ruby C-extension for exploring the Fibonacci series.
+Fibonacci is a Ruby gem written as a C-extension for exploring the Fibonacci series.
