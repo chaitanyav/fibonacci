@@ -58,7 +58,7 @@ val(VALUE self, VALUE n)
 		return Qnil;
 	}
 
-	if(Qtrue == rb_funcall(n, id_lt, 1, ZERO))
+	if(RTEST(rb_funcall(n, id_lt, 1, ZERO)))
 	{
 		rb_raise(rb_eArgError, "index cannot be negative");
 		return Qnil;
@@ -66,13 +66,13 @@ val(VALUE self, VALUE n)
 	else
 	{
 
-	for(start; Qtrue == rb_funcall(start, id_lte, 1, n); start = rb_funcall(start, id_plus, 1, ONE))
+	for(start; RTEST(rb_funcall(start, id_lte, 1, n)); start = rb_funcall(start, id_plus, 1, ONE))
 	{
-		if(Qtrue == rb_funcall(start, id_eq, 1, ZERO))
+		if(RTEST(rb_funcall(start, id_eq, 1, ZERO)))
 		{
 			fib_n = ZERO;
 		}
-		else if(Qtrue == rb_funcall(start, id_eq, 1, ONE))
+		else if(RTEST(rb_funcall(start, id_eq, 1, ONE)))
 		{
 			fib_n = ONE;
 		}
@@ -137,13 +137,13 @@ print(VALUE self, VALUE n)
 		return Qnil;
 	}
 
-	for(start; Qtrue == rb_funcall(start, id_lt, 1, n); start = rb_funcall(start, id_plus, 1, ONE))
+	for(start; RTEST(rb_funcall(start, id_lt, 1, n)); start = rb_funcall(start, id_plus, 1, ONE))
 	{
-		if(Qtrue == rb_funcall(start, id_eq, 1, ZERO))
+		if(RTEST(rb_funcall(start, id_eq, 1, ZERO)))
 		{
 			print_num(self, ZERO);
 		}
-		else if(Qtrue == rb_funcall(start, id_eq, 1, ONE))
+		else if(RTEST(rb_funcall(start, id_eq, 1, ONE)))
 		{
 			print_num(self, ONE);
 		}
@@ -174,7 +174,7 @@ num_digits(VALUE self, VALUE i)
 		return Qnil;
 	}
 
-	if(Qtrue == rb_funcall(i, id_lt, 1, ZERO))
+	if(RTEST(rb_funcall(i, id_lt, 1, ZERO)))
 	{
 		rb_raise(rb_eArgError, "index cannot be negative");
 		return Qnil;
