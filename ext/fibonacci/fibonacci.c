@@ -11,6 +11,7 @@
 #define ONE INT2NUM(1)
 #define ZERO INT2NUM(0)
 #define TWO INT2NUM(2)
+#define ARY_LEN 2L
 
 static VALUE cFibonacci;
 static ID id_plus;
@@ -49,16 +50,15 @@ static VALUE
 rb_matrix_mul(VALUE ary1, VALUE ary2)
 {
   long i, j, k;
-  long ary_len = 2;
   VALUE temp;
-  VALUE tmp_ary = rb_ary_new2(ary_len);
-  VALUE zero_ary = rb_ary_new2(ary_len);
+  VALUE tmp_ary = rb_ary_new2(ARY_LEN);
+  VALUE zero_ary = rb_ary_new2(ARY_LEN);
 
   rb_ary_push(zero_ary, ZERO);
   rb_ary_push(zero_ary, ZERO);
   rb_ary_push(tmp_ary, zero_ary);
 
-  zero_ary = rb_ary_new2(ary_len);
+  zero_ary = rb_ary_new2(ARY_LEN);
   rb_ary_push(zero_ary, ZERO);
   rb_ary_push(zero_ary, ZERO);
   rb_ary_push(tmp_ary, zero_ary);
@@ -80,14 +80,12 @@ rb_matrix_mul(VALUE ary1, VALUE ary2)
   return tmp_ary;
 }
 
-
 static VALUE
 rb_matrix_exponentiation_val(VALUE self, VALUE n)
 {
   VALUE base_ary;
   VALUE res_ary;
   VALUE tmp_ary;
-  VALUE zero_ary;
   long ary_len = 2;
 
   if(TYPE(n) != T_FIXNUM)
@@ -103,28 +101,27 @@ rb_matrix_exponentiation_val(VALUE self, VALUE n)
   }
   else
   {
-    base_ary = rb_ary_new2(ary_len);
-    res_ary =  rb_ary_new2(ary_len);
-    tmp_ary = rb_ary_new2(ary_len);
-    zero_ary = rb_ary_new2(ary_len);
+    base_ary = rb_ary_new2(ARY_LEN);
+    res_ary =  rb_ary_new2(ARY_LEN);
+    tmp_ary = rb_ary_new2(ARY_LEN);
 
     // base is {{1, 1}, {1, 0}}
     rb_ary_push(tmp_ary, ONE);
     rb_ary_push(tmp_ary, ONE);
     rb_ary_push(base_ary, tmp_ary);
 
-    tmp_ary = rb_ary_new2(ary_len);
+    tmp_ary = rb_ary_new2(ARY_LEN);
     rb_ary_push(tmp_ary, ONE);
     rb_ary_push(tmp_ary, ZERO);
     rb_ary_push(base_ary, tmp_ary);
 
     /*// res is {{1, 0}, {0, 1}}*/
-    tmp_ary = rb_ary_new2(ary_len);
+    tmp_ary = rb_ary_new2(ARY_LEN);
     rb_ary_push(tmp_ary, ONE);
     rb_ary_push(tmp_ary, ZERO);
     rb_ary_push(res_ary, tmp_ary);
 
-    tmp_ary = rb_ary_new2(ary_len);
+    tmp_ary = rb_ary_new2(ARY_LEN);
     rb_ary_push(tmp_ary, ZERO);
     rb_ary_push(tmp_ary, ONE);
     rb_ary_push(res_ary, tmp_ary);
