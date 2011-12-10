@@ -81,7 +81,7 @@ rb_matrix_mul(VALUE ary1, VALUE ary2)
 }
 
 static VALUE
-rb_matrix_exponentiation_val(VALUE self, VALUE n)
+rb_matrix_form(VALUE self, VALUE n)
 {
   VALUE base_ary;
   VALUE res_ary;
@@ -141,7 +141,7 @@ rb_matrix_exponentiation_val(VALUE self, VALUE n)
     }
   }
 
-  return RARRAY_PTR(rb_ary_entry(res_ary, 0L))[1];
+  return res_ary;
 }
 
 static VALUE
@@ -329,5 +329,5 @@ Init_fibonacci(void)
   rb_define_method(cFibonacci, "terms", terms, 1);
   rb_define_method(cFibonacci, "num_digits", num_digits, 1);
   rb_define_method(cFibonacci, "[]", rb_iterative_val, 1);
-  rb_define_method(cFibonacci, "mval", rb_matrix_exponentiation_val, 1);
+  rb_define_method(cFibonacci, "matrix", rb_matrix_form, 1);
 }
