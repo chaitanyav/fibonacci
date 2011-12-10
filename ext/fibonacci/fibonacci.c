@@ -46,14 +46,48 @@ print_num(VALUE self, VALUE num)
 }
 
 static VALUE
+rb_matrix_mul(VALUE ary1, VALUE ary2)
+{
+  long i, j, k;
+  long ary_len = 2;
+  VALUE temp;
+  VALUE tmp_ary = rb_ary_new2(ary_len);
+  VALUE zero_ary = rb_ary_new2(ary_len);
+
+  rb_ary_push(zero_ary, ZERO);
+  rb_ary_push(zero_ary, ZERO);
+  rb_ary_push(tmp_ary, zero_ary);
+
+  zero_ary = rb_ary_new2(ary_len);
+  rb_ary_push(zero_ary, ZERO);
+  rb_ary_push(zero_ary, ZERO);
+  rb_ary_push(tmp_ary, zero_ary);
+
+  for(i = 0; i < 2; i++)
+  {
+    for(j = 0; j < 2; j++)
+    {
+      for(k = 0; k < 2; k++)
+      {
+        //tmp[i][j] = (tmp[i][j] + ary1[i][k] * ary2[k][j]);
+        temp = rb_funcall(rb_ary_entry(rb_ary_entry(ary1, i), k), id_mul,
+            1, rb_ary_entry(rb_ary_entry(ary2, k), j));
+        rb_ary_store(rb_ary_entry(tmp_ary, i), j, rb_funcall(temp, id_plus, 1, rb_ary_entry(rb_ary_entry(tmp_ary, i), j)));
+      }
+    }
+  }
+
+  return tmp_ary;
+}
+
+
+static VALUE
 rb_matrix_exponentiation_val(VALUE self, VALUE n)
 {
   VALUE base_ary;
   VALUE res_ary;
   VALUE tmp_ary;
   VALUE zero_ary;
-  VALUE temp;
-  long i, j, k;
   long ary_len = 2;
 
   if(TYPE(n) != T_FIXNUM)
@@ -95,82 +129,21 @@ rb_matrix_exponentiation_val(VALUE self, VALUE n)
     rb_ary_push(tmp_ary, ONE);
     rb_ary_push(res_ary, tmp_ary);
 
-      tmp_ary = rb_ary_new2(ary_len);
-      zero_ary = rb_ary_new2(ary_len);
-      rb_ary_push(zero_ary, ZERO);
-      rb_ary_push(zero_ary, ZERO);
-      rb_ary_push(tmp_ary, zero_ary);
-
-      zero_ary = rb_ary_new2(ary_len);
-      rb_ary_push(zero_ary, ZERO);
-      rb_ary_push(zero_ary, ZERO);
-      rb_ary_push(tmp_ary, zero_ary);
-
     while(RTEST(rb_funcall(n, id_not_eq, 1, ZERO)))
     {
-      rb_ary_store(rb_ary_entry(tmp_ary, 0L), 0L, ZERO);
-      rb_ary_store(rb_ary_entry(tmp_ary, 0L), 1L, ZERO);
-      rb_ary_store(rb_ary_entry(tmp_ary, 1L), 0L, ZERO);
-      rb_ary_store(rb_ary_entry(tmp_ary, 1L), 1L, ZERO);
-
       if(RTEST(rb_funcall(rb_funcall(n, id_mod, 1, TWO), id_eq, 1, ZERO)))
       {
         n = rb_funcall(n, id_div, 1, TWO);
-
-        for(i = 0; i < 2; i++)
-        {
-          for(j = 0; j < 2; j++)
-          {
-            for(k = 0; k < 2; k++)
-            {
-              //tmp[i][j] = (tmp[i][j] + base[i][k] * base[k][j]);
-              temp = rb_funcall(rb_ary_entry(rb_ary_entry(base_ary, i), k), id_mul,
-                  1, rb_ary_entry(rb_ary_entry(base_ary, k), j));
-              rb_ary_store(rb_ary_entry(tmp_ary, i), j, rb_funcall(temp, id_plus, 1, rb_ary_entry(rb_ary_entry(tmp_ary, i), j)));
-            }
-          }
-        }
-
-        for(i = 0; i < 2; i++)
-        {
-          for(j = 0; j < 2; j++)
-          {
-            //base[i][j] = tmp[i][j];
-            rb_ary_store(rb_ary_entry(base_ary, i), j, rb_ary_entry(rb_ary_entry(tmp_ary, i), j));
-          }
-        }
+        base_ary = rb_matrix_mul(base_ary, base_ary);
       }
       else
       {
         n = rb_funcall(n, id_minus, 1, ONE);
-        for(i = 0; i < 2; i++)
-        {
-          for(j = 0; j < 2; j++)
-          {
-            for(k = 0; k < 2; k++)
-            {
-              //tmp[i][j] = (tmp[i][j] + res[i][k] * base[k][j]);
-              temp = rb_funcall(rb_ary_entry(rb_ary_entry(res_ary, i), k), id_mul,
-                  1, rb_ary_entry(rb_ary_entry(base_ary, k), j));
-              rb_ary_store(rb_ary_entry(tmp_ary, i), j, rb_funcall(temp, id_plus, 1, rb_ary_entry(rb_ary_entry(tmp_ary, i), j)));
-            }
-          }
-        }
-
-        for(i = 0; i < 2; i++)
-        {
-          for(j = 0; j < 2; j++)
-          {
-            //res[i][j] = tmp[i][j];
-            rb_ary_store(rb_ary_entry(res_ary, i), j, rb_ary_entry(rb_ary_entry(tmp_ary, i), j));
-          }
-        }
+        res_ary = rb_matrix_mul(res_ary, base_ary);
       }
     }
   }
 
-  /*temp = rb_funcall(res_ary, rb_intern("to_s"), 0);*/
-  /*printf("%s\n", StringValuePtr(temp));*/
   return RARRAY_PTR(rb_ary_entry(res_ary, 0L))[1];
 }
 
