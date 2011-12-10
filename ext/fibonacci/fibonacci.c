@@ -38,7 +38,7 @@ fibonacci_init(VALUE self)
 }
 
 static VALUE
-print_num(VALUE self, VALUE num)
+rb_print_num(VALUE num)
 {
   VALUE num_str =  rb_funcall(num, rb_intern("to_s"), 0);
   char *cptr = StringValuePtr(num_str);
@@ -241,18 +241,18 @@ print(VALUE self, VALUE n)
   {
     if(RTEST(rb_funcall(start, id_eq, 1, ZERO)))
     {
-      print_num(self, ZERO);
+      rb_print_num(ZERO);
     }
     else if(RTEST(rb_funcall(start, id_eq, 1, ONE)))
     {
-      print_num(self, ONE);
+      rb_print_num(ONE);
     }
     else
     {
       fib_n = rb_funcall(fib_n_1, id_plus, 1, fib_n_2);
       fib_n_2 = fib_n_1;
       fib_n_1 = fib_n;
-      print_num(self, fib_n);
+      rb_print_num(fib_n);
     }
   }
 
@@ -325,7 +325,6 @@ Init_fibonacci(void)
 
   cFibonacci = rb_define_class("Fibonacci", rb_cObject);
   rb_define_method(cFibonacci, "initialize", fibonacci_init, 0);
-  rb_define_private_method(cFibonacci, "print_num", print_num, 1);
   rb_define_method(cFibonacci, "print", print, 1);
   rb_define_method(cFibonacci, "terms", terms, 1);
   rb_define_method(cFibonacci, "num_digits", num_digits, 1);
