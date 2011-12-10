@@ -27,63 +27,193 @@ static ID id_floor;
 static ID id_sqrt;
 static ID id_mul;
 static ID id_eq;
-
+static ID id_not_eq;
+static ID id_mod;
 
 static VALUE
 fibonacci_init(VALUE self)
 {
-	return self;
+  return self;
 }
 
 static VALUE
 print_num(VALUE self, VALUE num)
 {
-	VALUE num_str =  rb_funcall(num, rb_intern("to_s"), 0);
-	char *cptr = StringValuePtr(num_str);
-	printf("%s\n", cptr);
-	return Qnil;
+  VALUE num_str =  rb_funcall(num, rb_intern("to_s"), 0);
+  char *cptr = StringValuePtr(num_str);
+  printf("%s\n", cptr);
+  return Qnil;
 }
 
 static VALUE
-val(VALUE self, VALUE n)
+rb_matrix_exponentiation_val(VALUE self, VALUE n)
 {
-	VALUE start = ZERO;
-	VALUE fib_n_1 = ONE;
-	VALUE fib_n_2 = ZERO;
-	VALUE fib_n = ZERO;
+  VALUE base_ary;
+  VALUE res_ary;
+  VALUE tmp_ary;
+  VALUE zero_ary;
+  VALUE temp;
+  long i, j, k;
+  long ary_len = 2;
 
-	if(TYPE(n) != T_FIXNUM)
-	{
-		rb_raise(rb_eArgError, "Invalid argument for type Fixnum");
-		return Qnil;
-	}
+  if(TYPE(n) != T_FIXNUM)
+  {
+    rb_raise(rb_eArgError, "Invalid argument for type Fixnum");
+    return Qnil;
+  }
 
-	if(RTEST(rb_funcall(n, id_lt, 1, ZERO)))
-	{
-		rb_raise(rb_eArgError, "index cannot be negative");
-		return Qnil;
-	}
-	else
-	{
+  if(RTEST(rb_funcall(n, id_lt, 1, ZERO)))
+  {
+    rb_raise(rb_eArgError, "index cannot be negative");
+    return Qnil;
+  }
+  else
+  {
+    base_ary = rb_ary_new2(ary_len);
+    res_ary =  rb_ary_new2(ary_len);
+    tmp_ary = rb_ary_new2(ary_len);
+    zero_ary = rb_ary_new2(ary_len);
 
-	for(start; RTEST(rb_funcall(start, id_lte, 1, n)); start = rb_funcall(start, id_plus, 1, ONE))
-	{
-		if(RTEST(rb_funcall(start, id_eq, 1, ZERO)))
-		{
-			fib_n = ZERO;
-		}
-		else if(RTEST(rb_funcall(start, id_eq, 1, ONE)))
-		{
-			fib_n = ONE;
-		}
-		else
-		{
-			fib_n = rb_funcall(fib_n_1, id_plus, 1, fib_n_2);
-			fib_n_2 = fib_n_1;
-			fib_n_1 = fib_n;
-		}
-	}
-	}
+    // base is {{1, 1}, {1, 0}}
+    rb_ary_push(tmp_ary, ONE);
+    rb_ary_push(tmp_ary, ONE);
+    rb_ary_push(base_ary, tmp_ary);
+
+    tmp_ary = rb_ary_new2(ary_len);
+    rb_ary_push(tmp_ary, ONE);
+    rb_ary_push(tmp_ary, ZERO);
+    rb_ary_push(base_ary, tmp_ary);
+
+    /*// res is {{1, 0}, {0, 1}}*/
+    tmp_ary = rb_ary_new2(ary_len);
+    rb_ary_push(tmp_ary, ONE);
+    rb_ary_push(tmp_ary, ZERO);
+    rb_ary_push(res_ary, tmp_ary);
+
+    tmp_ary = rb_ary_new2(ary_len);
+    rb_ary_push(tmp_ary, ZERO);
+    rb_ary_push(tmp_ary, ONE);
+    rb_ary_push(res_ary, tmp_ary);
+
+      tmp_ary = rb_ary_new2(ary_len);
+      zero_ary = rb_ary_new2(ary_len);
+      rb_ary_push(zero_ary, ZERO);
+      rb_ary_push(zero_ary, ZERO);
+      rb_ary_push(tmp_ary, zero_ary);
+
+      zero_ary = rb_ary_new2(ary_len);
+      rb_ary_push(zero_ary, ZERO);
+      rb_ary_push(zero_ary, ZERO);
+      rb_ary_push(tmp_ary, zero_ary);
+
+    while(RTEST(rb_funcall(n, id_not_eq, 1, ZERO)))
+    {
+      rb_ary_store(rb_ary_entry(tmp_ary, 0L), 0L, ZERO);
+      rb_ary_store(rb_ary_entry(tmp_ary, 0L), 1L, ZERO);
+      rb_ary_store(rb_ary_entry(tmp_ary, 1L), 0L, ZERO);
+      rb_ary_store(rb_ary_entry(tmp_ary, 1L), 1L, ZERO);
+
+      if(RTEST(rb_funcall(rb_funcall(n, id_mod, 1, TWO), id_eq, 1, ZERO)))
+      {
+        n = rb_funcall(n, id_div, 1, TWO);
+
+        for(i = 0; i < 2; i++)
+        {
+          for(j = 0; j < 2; j++)
+          {
+            for(k = 0; k < 2; k++)
+            {
+              //tmp[i][j] = (tmp[i][j] + base[i][k] * base[k][j]);
+              temp = rb_funcall(rb_ary_entry(rb_ary_entry(base_ary, i), k), id_mul,
+                  1, rb_ary_entry(rb_ary_entry(base_ary, k), j));
+              rb_ary_store(rb_ary_entry(tmp_ary, i), j, rb_funcall(temp, id_plus, 1, rb_ary_entry(rb_ary_entry(tmp_ary, i), j)));
+            }
+          }
+        }
+
+        for(i = 0; i < 2; i++)
+        {
+          for(j = 0; j < 2; j++)
+          {
+            //base[i][j] = tmp[i][j];
+            rb_ary_store(rb_ary_entry(base_ary, i), j, rb_ary_entry(rb_ary_entry(tmp_ary, i), j));
+          }
+        }
+      }
+      else
+      {
+        n = rb_funcall(n, id_minus, 1, ONE);
+        for(i = 0; i < 2; i++)
+        {
+          for(j = 0; j < 2; j++)
+          {
+            for(k = 0; k < 2; k++)
+            {
+              //tmp[i][j] = (tmp[i][j] + res[i][k] * base[k][j]);
+              temp = rb_funcall(rb_ary_entry(rb_ary_entry(res_ary, i), k), id_mul,
+                  1, rb_ary_entry(rb_ary_entry(base_ary, k), j));
+              rb_ary_store(rb_ary_entry(tmp_ary, i), j, rb_funcall(temp, id_plus, 1, rb_ary_entry(rb_ary_entry(tmp_ary, i), j)));
+            }
+          }
+        }
+
+        for(i = 0; i < 2; i++)
+        {
+          for(j = 0; j < 2; j++)
+          {
+            //res[i][j] = tmp[i][j];
+            rb_ary_store(rb_ary_entry(res_ary, i), j, rb_ary_entry(rb_ary_entry(tmp_ary, i), j));
+          }
+        }
+      }
+    }
+  }
+
+  /*temp = rb_funcall(res_ary, rb_intern("to_s"), 0);*/
+  /*printf("%s\n", StringValuePtr(temp));*/
+  return RARRAY_PTR(rb_ary_entry(res_ary, 0L))[1];
+}
+
+static VALUE
+rb_iterative_val(VALUE self, VALUE n)
+{
+  VALUE start = ZERO;
+  VALUE fib_n_1 = ONE;
+  VALUE fib_n_2 = ZERO;
+  VALUE fib_n = ZERO;
+
+  if(TYPE(n) != T_FIXNUM)
+  {
+    rb_raise(rb_eArgError, "Invalid argument for type Fixnum");
+    return Qnil;
+  }
+
+  if(RTEST(rb_funcall(n, id_lt, 1, ZERO)))
+  {
+    rb_raise(rb_eArgError, "index cannot be negative");
+    return Qnil;
+  }
+  else
+  {
+
+    for(start; RTEST(rb_funcall(start, id_lte, 1, n)); start = rb_funcall(start, id_plus, 1, ONE))
+    {
+      if(RTEST(rb_funcall(start, id_eq, 1, ZERO)))
+      {
+        fib_n = ZERO;
+      }
+      else if(RTEST(rb_funcall(start, id_eq, 1, ONE)))
+      {
+        fib_n = ONE;
+      }
+      else
+      {
+        fib_n = rb_funcall(fib_n_1, id_plus, 1, fib_n_2);
+        fib_n_2 = fib_n_1;
+        fib_n_1 = fib_n;
+      }
+    }
+  }
   return fib_n;
 }
 
@@ -126,106 +256,109 @@ terms(VALUE self, VALUE n)
 static VALUE
 print(VALUE self, VALUE n)
 {
-	VALUE start = ZERO;
-	VALUE fib_n_1 = ONE;
-	VALUE fib_n_2 = ZERO;
-	VALUE fib_n = ZERO;
+  VALUE start = ZERO;
+  VALUE fib_n_1 = ONE;
+  VALUE fib_n_2 = ZERO;
+  VALUE fib_n = ZERO;
 
-	if(TYPE(n) != T_FIXNUM)
-	{
-		rb_raise(rb_eArgError, "Invalid argument for type Fixnum");
-		return Qnil;
-	}
+  if(TYPE(n) != T_FIXNUM)
+  {
+    rb_raise(rb_eArgError, "Invalid argument for type Fixnum");
+    return Qnil;
+  }
 
-	for(start; RTEST(rb_funcall(start, id_lt, 1, n)); start = rb_funcall(start, id_plus, 1, ONE))
-	{
-		if(RTEST(rb_funcall(start, id_eq, 1, ZERO)))
-		{
-			print_num(self, ZERO);
-		}
-		else if(RTEST(rb_funcall(start, id_eq, 1, ONE)))
-		{
-			print_num(self, ONE);
-		}
-		else
-		{
-			fib_n = rb_funcall(fib_n_1, id_plus, 1, fib_n_2);
-			fib_n_2 = fib_n_1;
-			fib_n_1 = fib_n;
-			print_num(self, fib_n);
-		}
-	}
+  for(start; RTEST(rb_funcall(start, id_lt, 1, n)); start = rb_funcall(start, id_plus, 1, ONE))
+  {
+    if(RTEST(rb_funcall(start, id_eq, 1, ZERO)))
+    {
+      print_num(self, ZERO);
+    }
+    else if(RTEST(rb_funcall(start, id_eq, 1, ONE)))
+    {
+      print_num(self, ONE);
+    }
+    else
+    {
+      fib_n = rb_funcall(fib_n_1, id_plus, 1, fib_n_2);
+      fib_n_2 = fib_n_1;
+      fib_n_1 = fib_n;
+      print_num(self, fib_n);
+    }
+  }
 
-	return Qnil;
+  return Qnil;
 }
 
 static VALUE
 index_of(VALUE self, VALUE val)
 {
-	return Qnil;
+  return Qnil;
 }
 
 static VALUE
 num_digits(VALUE self, VALUE i)
 {
-	if(TYPE(i) != T_FIXNUM)
-	{
-		rb_raise(rb_eArgError, "Invalid argument for type Fixnum");
-		return Qnil;
-	}
+  if(TYPE(i) != T_FIXNUM)
+  {
+    rb_raise(rb_eArgError, "Invalid argument for type Fixnum");
+    return Qnil;
+  }
 
-	if(RTEST(rb_funcall(i, id_lt, 1, ZERO)))
-	{
-		rb_raise(rb_eArgError, "index cannot be negative");
-		return Qnil;
-	}
-	else
-	{
-		VALUE phi = ONE;
-		VALUE num_digits = ZERO;
-		VALUE log_sqrt_5 = ZERO;
+  if(RTEST(rb_funcall(i, id_lt, 1, ZERO)))
+  {
+    rb_raise(rb_eArgError, "index cannot be negative");
+    return Qnil;
+  }
+  else
+  {
+    VALUE phi = ONE;
+    VALUE num_digits = ZERO;
+    VALUE log_sqrt_5 = ZERO;
 
-		VALUE sqrt_5 = rb_funcall(rb_mMath, id_sqrt, 1, INT2NUM(5));
-		log_sqrt_5 = rb_funcall(rb_mMath, id_log10, 1, sqrt_5);
+    VALUE sqrt_5 = rb_funcall(rb_mMath, id_sqrt, 1, INT2NUM(5));
+    log_sqrt_5 = rb_funcall(rb_mMath, id_log10, 1, sqrt_5);
 
-		phi = rb_funcall(phi, id_plus, 1, sqrt_5);
-		phi = rb_funcall(phi, id_fdiv, 1, TWO);
+    phi = rb_funcall(phi, id_plus, 1, sqrt_5);
+    phi = rb_funcall(phi, id_fdiv, 1, TWO);
 
-		num_digits = rb_funcall(rb_mMath, id_log10, 1, phi);
-		num_digits = rb_funcall(num_digits, id_mul, 1, i);
-		num_digits = rb_funcall(num_digits, id_minus, 1, log_sqrt_5);
+    num_digits = rb_funcall(rb_mMath, id_log10, 1, phi);
+    num_digits = rb_funcall(num_digits, id_mul, 1, i);
+    num_digits = rb_funcall(num_digits, id_minus, 1, log_sqrt_5);
 
-		num_digits = rb_funcall(num_digits, id_floor, 0);
-		num_digits = rb_funcall(num_digits, id_plus, 1, ONE);
-		num_digits = rb_funcall(num_digits, id_to_i, 0);
+    num_digits = rb_funcall(num_digits, id_floor, 0);
+    num_digits = rb_funcall(num_digits, id_plus, 1, ONE);
+    num_digits = rb_funcall(num_digits, id_to_i, 0);
 
-		return num_digits;
-	}
+    return num_digits;
+  }
 }
 
 void
 Init_fibonacci(void)
 {
-	id_plus = rb_intern("+");
-	id_lte = rb_intern("<=");
-	id_lt = rb_intern("<");
-        id_gte = rb_intern(">=");
-	id_pow = rb_intern("**");
-	id_mul = rb_intern("*");
-	id_minus = rb_intern("-");
-	id_fdiv = rb_intern("fdiv");
-	id_div = rb_intern("/");
-	id_to_i = rb_intern("to_i");
-	id_log10 = rb_intern("log10");
-	id_floor = rb_intern("floor");
-	id_sqrt = rb_intern("sqrt");
-	id_eq = rb_intern("==");
+  id_plus = rb_intern("+");
+  id_lte = rb_intern("<=");
+  id_lt = rb_intern("<");
+  id_gte = rb_intern(">=");
+  id_pow = rb_intern("**");
+  id_mul = rb_intern("*");
+  id_minus = rb_intern("-");
+  id_fdiv = rb_intern("fdiv");
+  id_div = rb_intern("/");
+  id_to_i = rb_intern("to_i");
+  id_log10 = rb_intern("log10");
+  id_floor = rb_intern("floor");
+  id_sqrt = rb_intern("sqrt");
+  id_eq = rb_intern("==");
+  id_not_eq = rb_intern("!=");
+  id_mod = rb_intern("!=");
 
-	cFibonacci = rb_define_class("Fibonacci", rb_cObject);
-	rb_define_method(cFibonacci, "initialize", fibonacci_init, 0);
-	rb_define_private_method(cFibonacci, "print_num", print_num, 1);
-	rb_define_method(cFibonacci, "print", print, 1);
-	rb_define_method(cFibonacci, "terms", terms, 1);
-	rb_define_method(cFibonacci, "num_digits", num_digits, 1);
-	rb_define_method(cFibonacci, "[]", val, 1);
+  cFibonacci = rb_define_class("Fibonacci", rb_cObject);
+  rb_define_method(cFibonacci, "initialize", fibonacci_init, 0);
+  rb_define_private_method(cFibonacci, "print_num", print_num, 1);
+  rb_define_method(cFibonacci, "print", print, 1);
+  rb_define_method(cFibonacci, "terms", terms, 1);
+  rb_define_method(cFibonacci, "num_digits", num_digits, 1);
+  rb_define_method(cFibonacci, "[]", rb_iterative_val, 1);
+  rb_define_method(cFibonacci, "mval", rb_matrix_exponentiation_val, 1);
 }
