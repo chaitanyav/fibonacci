@@ -34,7 +34,7 @@ irb(main):005:0> fib.terms(5)
 => [0, 1, 1, 2, 3]
 
 fib.num_digits(n) will return the number of digits in the nth term of series
-(http://en.wikipedia.org/wiki/Fibonacci_number#Closed-form_expression)
+(http://en.wikipedia.org/wiki/Fibonacci_number#Computation_by_rounding)
 
 irb(main):007:0> fib.num_digits(1000)
 => 209
