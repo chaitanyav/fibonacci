@@ -96,7 +96,7 @@ rb_matrix_form(VALUE self, VALUE n)
 
   if(RTEST(rb_funcall(n, id_lt, 1, ZERO)))
   {
-    rb_raise(rb_eArgError, "index cannot be negative");
+    rb_raise(rb_eArgError, "n cannot be negative");
     return Qnil;
   }
   else
@@ -160,7 +160,7 @@ rb_iterative_val(VALUE self, VALUE n)
 
   if(RTEST(rb_funcall(n, id_lt, 1, ZERO)))
   {
-    rb_raise(rb_eArgError, "index cannot be negative");
+    rb_raise(rb_eArgError, "n cannot be negative");
     return Qnil;
   }
   else
