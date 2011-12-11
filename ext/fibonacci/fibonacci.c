@@ -266,17 +266,17 @@ index_of(VALUE self, VALUE val)
 }
 
 static VALUE
-num_digits(VALUE self, VALUE i)
+num_digits(VALUE self, VALUE n)
 {
-  if(TYPE(i) != T_FIXNUM)
+  if(TYPE(n) != T_FIXNUM)
   {
     rb_raise(rb_eArgError, "Invalid argument for type Fixnum");
     return Qnil;
   }
 
-  if(RTEST(rb_funcall(i, id_lt, 1, ZERO)))
+  if(RTEST(rb_funcall(n, id_lt, 1, ZERO)))
   {
-    rb_raise(rb_eArgError, "index cannot be negative");
+    rb_raise(rb_eArgError, "n cannot be negative");
     return Qnil;
   }
   else
@@ -284,22 +284,39 @@ num_digits(VALUE self, VALUE i)
     VALUE phi = ONE;
     VALUE num_digits = ZERO;
     VALUE log_sqrt_5 = ZERO;
+    VALUE sqrt_5;
 
-    VALUE sqrt_5 = rb_funcall(rb_mMath, id_sqrt, 1, INT2NUM(5));
-    log_sqrt_5 = rb_funcall(rb_mMath, id_log10, 1, sqrt_5);
+    if(RTEST(rb_funcall(n, id_eq, 1, ZERO)))
+    {
+      return ZERO;
+    }
 
-    phi = rb_funcall(phi, id_plus, 1, sqrt_5);
-    phi = rb_funcall(phi, id_fdiv, 1, TWO);
+    /*  work around since the value log(phi/sqrt(5)) + 1 = 0.8595026380819693
+     *  converting to integer would be zero
+     */
+    if(RTEST(rb_funcall(n, id_eq, 1, ONE)))
+    {
+      return ONE;
+    }
 
-    num_digits = rb_funcall(rb_mMath, id_log10, 1, phi);
-    num_digits = rb_funcall(num_digits, id_mul, 1, i);
-    num_digits = rb_funcall(num_digits, id_minus, 1, log_sqrt_5);
+    if(RTEST(rb_funcall(n, id_gte, 1, TWO)))
+    {
+      sqrt_5 = rb_funcall(rb_mMath, id_sqrt, 1, INT2NUM(5));
+      log_sqrt_5 = rb_funcall(rb_mMath, id_log10, 1, sqrt_5);
 
-    num_digits = rb_funcall(num_digits, id_floor, 0);
-    num_digits = rb_funcall(num_digits, id_plus, 1, ONE);
-    num_digits = rb_funcall(num_digits, id_to_i, 0);
+      phi = rb_funcall(phi, id_plus, 1, sqrt_5);
+      phi = rb_funcall(phi, id_fdiv, 1, TWO);
 
-    return num_digits;
+      num_digits = rb_funcall(rb_mMath, id_log10, 1, phi);
+      num_digits = rb_funcall(num_digits, id_mul, 1, n);
+      num_digits = rb_funcall(num_digits, id_minus, 1, log_sqrt_5);
+
+      num_digits = rb_funcall(num_digits, id_floor, 0);
+      num_digits = rb_funcall(num_digits, id_plus, 1, ONE);
+      num_digits = rb_funcall(num_digits, id_to_i, 0);
+
+      return num_digits;
+    }
   }
 }
 
