@@ -85,16 +85,16 @@ rb_matrix_mul(VALUE ary1, VALUE ary2)
  *
  *  Returns a 2x2 matrix(2-dimensional array).
  *
- *  fib.matrix(10)
- *  #=> [[89, 55], [55, 34]]
+ *   fib.matrix(10)
+ *   #=> [[89, 55], [55, 34]]
  *
- *  fib.matrix(100)
- *  #=> [[573147844013817084101, 354224848179261915075], [354224848179261915075,218922995834555169026]]
+ *   fib.matrix(100)
+ *   #=> [[573147844013817084101, 354224848179261915075], [354224848179261915075,218922995834555169026]]
  *
- *  arr = fib.matrix(15)
- *  #=> [[987, 610], [610, 377]]
+ *   arr = fib.matrix(15)
+ *   #=> [[987, 610], [610, 377]]
  *
- *  arr[0][1] or arr[1][0] is the value of nth term
+ *   arr[0][1] or arr[1][0] is the value of nth term
  *
  *  Refer to http://en.wikipedia.org/wiki/Fibonacci_number#Matrix_form
  *
@@ -169,14 +169,14 @@ rb_matrix_form(VALUE self, VALUE n)
  *
  *  Returns a Fixnum or Bignum.
  *
- *  fib[100]
- *  #=> 354224848179261915075
+ *   fib[100]
+ *   #=> 354224848179261915075
  *
- *  fib[10]
- *  #=> 55
+ *   fib[10]
+ *   #=> 55
  *
- *  fib[200]
- *  #=> 280571172992510140037611932413038677189525
+ *   fib[200]
+ *   #=> 280571172992510140037611932413038677189525
  *
  *  The value of nth term is calculated iteratively.
  *
@@ -231,17 +231,17 @@ rb_iterative_val(VALUE self, VALUE n)
  *
  *  Returns a array with the first n terms of the series
  *
- *  fib.terms(5)
- *  #=> [0, 1, 1, 2, 3]
+ *   fib.terms(5)
+ *   #=> [0, 1, 1, 2, 3]
  *
- *  fib.terms(10)
- *  #=> [0, 1, 1, 2, 3, 5, 8, 13, 21, 34]
+ *   fib.terms(10)
+ *   #=> [0, 1, 1, 2, 3, 5, 8, 13, 21, 34]
  *
- *  fib.terms(15)
- *  #=> [0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377]
+ *   fib.terms(15)
+ *   #=> [0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377]
  *
- *  fib.terms(0)
- *  #=> []
+ *   fib.terms(0)
+ *   #=> []
  *
  *  Refer to http://en.wikipedia.org/wiki/Fibonacci_number#First_identity
  */
@@ -342,11 +342,11 @@ index_of(VALUE self, VALUE val)
  *
  *  Returns the number of digits in the nth term of the series
  *
- *  fib.num_digits(10)
- *  #=> 2
+ *   fib.num_digits(10)
+ *   #=> 2
  *
- *  fib.num_digits(100)
- *  #=> 21
+ *   fib.num_digits(100)
+ *   #=> 21
  *
  *  Refer to http://en.wikipedia.org/wiki/Fibonacci_number#Computation_by_rounding
  */
