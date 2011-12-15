@@ -1,46 +1,53 @@
 Fibonacci is a Ruby gem written as a C-extension for exploring the Fibonacci series.
+===============================================================================
 
+-------------------------------------------------------------------------------
+Installation:
+-------------------------------------------------------------------------------
+
+    gem install fibonacci
+
+-------------------------------------------------------------------------------
 Usage:
-------------------------------------------------------------------------------
-  irb(main):001:0> require 'fibonacci'
-  => true
+-------------------------------------------------------------------------------
 
-  irb(main):002:0> fib = Fibonacci.new
-  => #<Fibonacci:0x000000025cf218>
+    irb(main):001:0> require 'fibonacci'
+    #=> true
 
-fib.print(n) will print the first n terms of the series
+    irb(main):002:0> fib = Fibonacci.new
+    #=> #<Fibonacci:0x000000025cf218>
 
-  irb(main):003:0> fib.print(5)
-  0
-  1
-  1
-  2
-  3
-  => nil
+ fib.print(n) will print the first n terms of the series
 
-fib[n] will return the nth term of the series, the nth term is computed
+    irb(main):003:0> fib.print(5)
+    #=> 0
+        1
+        1
+        2
+        3
+
+ fib[n] will return the nth term of the series, the nth term is computed
 iteratively
 
-  irb(main):004:0> fib[1000]
-  => 43466557686937456435688527675040625802564660517371780402481729089536555417949051890403879840079255169295922593080322634775209689623239873322471161642996440906533187938298969649928516003704476137795166849228875
+    irb(main):004:0> fib[1000]
+    #=> 43466557686937456435688527675040625802564660517371780402481729089536555417949051890403879840079255169295922593080322634775209689623239873322471161642996440906533187938298969649928516003704476137795166849228875
 
-fib.matrix(n) will return the nth power of matrix(http://en.wikipedia.org/wiki/Fibonacci_number#Matrix_form)
+ fib.matrix(n) will return the nth power of matrix(http://en.wikipedia.org/wiki/Fibonacci_number#Matrix_form)
 
-  irb(main):013:0> fib.matrix(100)
-  => [[573147844013817084101, 354224848179261915075], [354224848179261915075,
-  218922995834555169026]]
+    irb(main):013:0> fib.matrix(100)
+    #=> [[573147844013817084101, 354224848179261915075], [354224848179261915075, 218922995834555169026]]
 
 
-fib.terms(n) will return an array of first n terms of the series
+ fib.terms(n) will return an array of first n terms of the series
 
-  irb(main):005:0> fib.terms(5)
-  => [0, 1, 1, 2, 3]
+    irb(main):005:0> fib.terms(5)
+    #=> [0, 1, 1, 2, 3]
 
-fib.num_digits(n) will return the number of digits in the nth term of series
-(http://en.wikipedia.org/wiki/Fibonacci_number#Computation_by_rounding)
+ fib.num_digits(n) will return the number of digits in the nth term of series
+ (http://en.wikipedia.org/wiki/Fibonacci_number#Computation_by_rounding)
 
-  irb(main):007:0> fib.num_digits(1000)
-  => 209
+    irb(main):007:0> fib.num_digits(1000)
+    #=> 209
 
-  irb(main):006:0> fib[1000].to_s.length
-  => 209
+    irb(main):006:0> fib[1000].to_s.length
+    #=> 209
