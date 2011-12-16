@@ -11,12 +11,14 @@
 #define ONE INT2NUM(1)
 #define ZERO INT2NUM(0)
 #define TWO INT2NUM(2)
+#define THREE INT2NUM(3)
+#define MINUS_ONE INT2NUM(-1)
 #define ARY_LEN 2L
 
 static VALUE cFibonacci;
 static ID id_plus, id_lte, id_gte, id_lt, id_pow, id_minus, id_fdiv, id_div;
 static ID id_to_i, id_log10, id_floor, id_sqrt, id_mul, id_eq, id_not_eq;
-static ID id_mod;
+static ID id_mod, id_bit_and, id_log2;
 
 static VALUE
 fibonacci_init(VALUE self)
@@ -31,6 +33,105 @@ rb_print_num(VALUE num)
     char *cptr = StringValuePtr(num_str);
     printf("%s\n", cptr);
     return Qnil;
+}
+
+
+/*  call-seq:
+ *    fib.fast_val(n)
+ *
+ *  Returns a Fixnum or Bignum.
+ *
+ *   fib.fast_val(100)
+ *   #=> 354224848179261915075
+ *
+ *   fib.fast_val(10)
+ *   #=> 55
+ *
+ *   fib.fast_val(200)
+ *   #=> 280571172992510140037611932413038677189525
+ *
+ *
+ *  ref: Daisuke Takahashi, A fast algorithm for computing large Fibonacci
+ *  numbers, Information Processing Letters, Volume 75, Issue 6, 30 November
+ *  2000, Pages 243-246, ISSN 0020-0190, 10.1016/S0020-0190(00)00112-5.
+ */
+
+static VALUE
+rb_fast_val(VALUE self, VALUE n)
+{
+    VALUE f, l, sign, mask, log2, i, logn, logn_min_1, temp;
+
+    if(TYPE(n) != T_FIXNUM)
+    {
+        rb_raise(rb_eArgError, "Invalid argument for type Fixnum");
+        return Qnil;
+    }
+
+    if(RTEST(rb_funcall(n, id_lt, 1, ZERO)))
+    {
+        rb_raise(rb_eArgError, "n cannot be negative");
+        return Qnil;
+    }
+    else
+    {
+      if(rb_equal(n, ZERO))
+      {
+        return ZERO;
+      }
+      else if(rb_equal(n, ONE))
+      {
+        return ONE;
+      }
+      else if(rb_equal(n, TWO))
+      {
+        return ONE;
+      }
+      else
+      {
+        f = ONE;
+        l = ONE;
+        sign = MINUS_ONE;
+        logn = rb_funcall(rb_mMath, id_log2, 1, n);
+        logn = rb_funcall(logn, id_floor, 0);
+        logn_min_1 = rb_funcall(logn, id_minus, 1, ONE);
+        mask = rb_funcall(TWO, id_pow, 1, logn_min_1);
+        for(i = ONE; RTEST(rb_funcall(i, id_lte, 1, logn_min_1)); i = rb_funcall(i, id_plus, 1, ONE))
+        {
+          temp = rb_funcall(f, id_mul, 1, f);
+          f = rb_funcall(f, id_plus, 1, l);
+          f = rb_funcall(f, id_div, 1, TWO);
+          f = rb_funcall(rb_funcall(f, id_mul, 1, f), id_mul, 1, TWO);
+          f = rb_funcall(f, id_minus, 1, rb_funcall(temp, id_mul, 1, THREE));
+          f = rb_funcall(f, id_minus, 1, rb_funcall(sign, id_mul, 1, TWO));
+          l = rb_funcall(temp, id_mul, 1, INT2NUM(5));
+          l = rb_funcall(l, id_plus, 1, rb_funcall(TWO, id_mul, 1, sign));
+          sign = ONE;
+          if(RTEST(rb_funcall(rb_funcall(n, id_bit_and, 1, mask), id_not_eq, 1, ZERO)))
+          {
+            temp = f;
+            f = rb_funcall(f, id_plus, 1, l);
+            f = rb_funcall(f, id_div, 1, TWO);
+            l = rb_funcall(TWO, id_mul, 1, temp);
+            l = rb_funcall(l, id_plus, 1, f);
+            sign = MINUS_ONE;
+          }
+          mask = rb_funcall(mask, id_div, 1, TWO);
+        }
+          if(rb_equal(rb_funcall(n, id_bit_and, 1, mask), ZERO))
+          {
+            f = rb_funcall(f, id_mul, 1, l);
+          }
+          else
+          {
+            f = rb_funcall(f, id_plus, 1, l);
+            f = rb_funcall(f, id_div, 1, TWO);
+            f = rb_funcall(f, id_mul, 1, l);
+            f = rb_funcall(f, id_minus, 1, sign);
+          }
+      }
+    }
+
+    return f;
 }
 
 static VALUE
@@ -412,11 +513,13 @@ Init_fibonacci(void)
     id_div = rb_intern("/");
     id_to_i = rb_intern("to_i");
     id_log10 = rb_intern("log10");
+    id_log2 = rb_intern("log2");
     id_floor = rb_intern("floor");
     id_sqrt = rb_intern("sqrt");
     id_eq = rb_intern("==");
     id_not_eq = rb_intern("!=");
     id_mod = rb_intern("!=");
+    id_bit_and = rb_intern("&");
 
     cFibonacci = rb_define_class("Fibonacci", rb_cObject);
     rb_define_method(cFibonacci, "initialize", fibonacci_init, 0);
@@ -425,4 +528,5 @@ Init_fibonacci(void)
     rb_define_method(cFibonacci, "num_digits", num_digits, 1);
     rb_define_method(cFibonacci, "[]", rb_iterative_val, 1);
     rb_define_method(cFibonacci, "matrix", rb_matrix_form, 1);
+    rb_define_method(cFibonacci, "fast_val", rb_fast_val, 1);
 }
