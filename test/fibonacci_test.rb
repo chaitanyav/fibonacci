@@ -43,4 +43,24 @@ class FibonacciTest < MiniTest::Unit::TestCase
       @fib.terms(100000000000000000000000000000)
     end
   end
+
+  def test_fast_val
+    assert_equal 0, @fib.fast_val(0)
+    assert_equal 1, @fib.fast_val(1)
+    assert_equal 34, @fib.fast_val(9)
+    assert_equal 55, @fib.fast_val(10)
+    assert_equal 354224848179261915075, @fib.fast_val(100)
+
+    assert_raises ArgumentError do
+      @fib.fast_val(-1)
+    end
+
+    assert_raises ArgumentError do
+      @fib.fast_val("12")
+    end
+
+    assert_raises ArgumentError do
+      @fib.fast_val(1.0)
+    end
+  end
 end
