@@ -106,7 +106,7 @@ rb_fast_val(VALUE self, VALUE n)
           l = rb_funcall(temp, id_mul, 1, INT2NUM(5));
           l = rb_funcall(l, id_plus, 1, rb_funcall(TWO, id_mul, 1, sign));
           sign = ONE;
-          if(RTEST(rb_funcall(rb_funcall(n, id_bit_and, 1, mask), id_not_eq, 1, ZERO)))
+          if(!rb_equal(rb_funcall(n, id_bit_and, 1, mask), ZERO))
           {
             temp = f;
             f = rb_funcall(f, id_plus, 1, l);
@@ -233,9 +233,9 @@ rb_matrix_form(VALUE self, VALUE n)
         rb_ary_push(tmp_ary, ONE);
         rb_ary_push(res_ary, tmp_ary);
 
-        while(RTEST(rb_funcall(n, id_not_eq, 1, ZERO)))
+        while(!rb_equal(n, ZERO))
         {
-            if(RTEST(rb_funcall(rb_funcall(n, id_mod, 1, TWO), id_eq, 1, ZERO)))
+            if(rb_equal(rb_funcall(n, id_mod, 1, TWO), ZERO))
             {
                 n = rb_funcall(n, id_div, 1, TWO);
                 base_ary = rb_matrix_mul(base_ary, base_ary);
@@ -294,11 +294,11 @@ rb_iterative_val(VALUE self, VALUE n)
 
         for(start; RTEST(rb_funcall(start, id_lte, 1, n)); start = rb_funcall(start, id_plus, 1, ONE))
         {
-            if(RTEST(rb_funcall(start, id_eq, 1, ZERO)))
+            if(rb_equal(start, ZERO))
             {
                 fib_n = ZERO;
             }
-            else if(RTEST(rb_funcall(start, id_eq, 1, ONE)))
+            else if(rb_equal(start, ONE))
             {
                 fib_n = ONE;
             }
@@ -405,11 +405,11 @@ print(VALUE self, VALUE n)
 
     for(start; RTEST(rb_funcall(start, id_lt, 1, n)); start = rb_funcall(start, id_plus, 1, ONE))
     {
-        if(RTEST(rb_funcall(start, id_eq, 1, ZERO)))
+        if(rb_equal(start, ZERO))
         {
             rb_print_num(ZERO);
         }
-        else if(RTEST(rb_funcall(start, id_eq, 1, ONE)))
+        else if(rb_equal(start, ONE))
         {
             rb_print_num(ONE);
         }
@@ -466,14 +466,14 @@ num_digits(VALUE self, VALUE n)
         VALUE log_sqrt_5 = ZERO;
         VALUE sqrt_5;
 
-        if(RTEST(rb_funcall(n, id_eq, 1, ZERO)))
+        if(rb_equal(n, ZERO))
         {
             return ZERO;
         }
 
         /*  work around since the value log(phi/sqrt(5)) + 1 = 0.8595026380819693
          *  converting to integer would be zero */
-        if(RTEST(rb_funcall(n, id_eq, 1, ONE)))
+        if(rb_equal(n, ONE))
         {
             return ONE;
         }
