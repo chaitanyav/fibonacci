@@ -273,7 +273,7 @@ rb_matrix_form(VALUE self, VALUE n)
 static VALUE
 rb_iterative_val(VALUE self, VALUE n)
 {
-    VALUE start = ZERO;
+    VALUE start = TWO;
     VALUE fib_n_1 = ONE;
     VALUE fib_n_2 = ZERO;
     VALUE fib_n = ZERO;
@@ -289,26 +289,23 @@ rb_iterative_val(VALUE self, VALUE n)
         rb_raise(rb_eArgError, "n cannot be negative");
         return Qnil;
     }
+
+    if(rb_equal(n, ZERO))
+    {
+      fib_n = ZERO;
+    }
+    else if(rb_equal(n, ONE))
+    {
+      fib_n = ONE;
+    }
     else
     {
-
-        for(start; RTEST(rb_funcall(start, id_lte, 1, n)); start = rb_funcall(start, id_plus, 1, ONE))
-        {
-            if(rb_equal(start, ZERO))
-            {
-                fib_n = ZERO;
-            }
-            else if(rb_equal(start, ONE))
-            {
-                fib_n = ONE;
-            }
-            else
-            {
-                fib_n = rb_funcall(fib_n_1, id_plus, 1, fib_n_2);
-                fib_n_2 = fib_n_1;
-                fib_n_1 = fib_n;
-            }
-        }
+      for(start; RTEST(rb_funcall(start, id_lte, 1, n)); start = rb_funcall(start, id_plus, 1, ONE))
+      {
+        fib_n = rb_funcall(fib_n_1, id_plus, 1, fib_n_2);
+        fib_n_2 = fib_n_1;
+        fib_n_1 = fib_n;
+      }
     }
     return fib_n;
 }
@@ -403,6 +400,12 @@ print(VALUE self, VALUE n)
         return Qnil;
     }
 
+    if(RTEST(rb_funcall(n, id_lt, 1, ZERO)))
+    {
+        rb_raise(rb_eArgError, "n cannot be negative");
+        return Qnil;
+    }
+
     for(start; RTEST(rb_funcall(start, id_lt, 1, n)); start = rb_funcall(start, id_plus, 1, ONE))
     {
         if(rb_equal(start, ZERO))
@@ -421,7 +424,6 @@ print(VALUE self, VALUE n)
             rb_print_num(fib_n);
         }
     }
-
     return Qnil;
 }
 
@@ -459,43 +461,41 @@ num_digits(VALUE self, VALUE n)
         rb_raise(rb_eArgError, "n cannot be negative");
         return Qnil;
     }
-    else
+
+    VALUE phi = ONE;
+    VALUE num_digits = ZERO;
+    VALUE log_sqrt_5 = ZERO;
+    VALUE sqrt_5;
+
+    if(rb_equal(n, ZERO))
     {
-        VALUE phi = ONE;
-        VALUE num_digits = ZERO;
-        VALUE log_sqrt_5 = ZERO;
-        VALUE sqrt_5;
+      return ZERO;
+    }
 
-        if(rb_equal(n, ZERO))
-        {
-            return ZERO;
-        }
+    /*  work around since the value log(phi/sqrt(5)) + 1 = 0.8595026380819693
+     *  converting to integer would be zero */
+    if(rb_equal(n, ONE))
+    {
+      return ONE;
+    }
 
-        /*  work around since the value log(phi/sqrt(5)) + 1 = 0.8595026380819693
-         *  converting to integer would be zero */
-        if(rb_equal(n, ONE))
-        {
-            return ONE;
-        }
+    if(RTEST(rb_funcall(n, id_gte, 1, TWO)))
+    {
+      sqrt_5 = rb_funcall(rb_mMath, id_sqrt, 1, INT2NUM(5));
+      log_sqrt_5 = rb_funcall(rb_mMath, id_log10, 1, sqrt_5);
 
-        if(RTEST(rb_funcall(n, id_gte, 1, TWO)))
-        {
-            sqrt_5 = rb_funcall(rb_mMath, id_sqrt, 1, INT2NUM(5));
-            log_sqrt_5 = rb_funcall(rb_mMath, id_log10, 1, sqrt_5);
+      phi = rb_funcall(phi, id_plus, 1, sqrt_5);
+      phi = rb_funcall(phi, id_fdiv, 1, TWO);
 
-            phi = rb_funcall(phi, id_plus, 1, sqrt_5);
-            phi = rb_funcall(phi, id_fdiv, 1, TWO);
+      num_digits = rb_funcall(rb_mMath, id_log10, 1, phi);
+      num_digits = rb_funcall(num_digits, id_mul, 1, n);
+      num_digits = rb_funcall(num_digits, id_minus, 1, log_sqrt_5);
 
-            num_digits = rb_funcall(rb_mMath, id_log10, 1, phi);
-            num_digits = rb_funcall(num_digits, id_mul, 1, n);
-            num_digits = rb_funcall(num_digits, id_minus, 1, log_sqrt_5);
+      num_digits = rb_funcall(num_digits, id_floor, 0);
+      num_digits = rb_funcall(num_digits, id_plus, 1, ONE);
+      num_digits = rb_funcall(num_digits, id_to_i, 0);
 
-            num_digits = rb_funcall(num_digits, id_floor, 0);
-            num_digits = rb_funcall(num_digits, id_plus, 1, ONE);
-            num_digits = rb_funcall(num_digits, id_to_i, 0);
-
-            return num_digits;
-        }
+      return num_digits;
     }
 }
 
