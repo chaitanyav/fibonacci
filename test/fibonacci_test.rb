@@ -63,4 +63,27 @@ class FibonacciTest < MiniTest::Unit::TestCase
       @fib.fast_val(1.0)
     end
   end
+
+  def test_matrix
+    assert_equal 0, (@fib.matrix(0))[0][1]
+    assert_equal 1, (@fib.matrix(1))[0][1]
+    assert_equal 34, (@fib.matrix(9))[0][1]
+    assert_equal 55, (@fib.matrix(10))[0][1]
+    assert_equal 354224848179261915075, (@fib.matrix(100))[0][1]
+
+    matrix = @fib.matrix(100)
+    assert_equal (@fib.matrix(101))[0][1], (matrix[0][1] + matrix[1][1])
+
+    assert_raises ArgumentError do
+      @fib.matrix(-1)
+    end
+
+    assert_raises ArgumentError do
+      @fib.matrix("12")
+    end
+
+    assert_raises ArgumentError do
+      @fib.matrix(1.0)
+    end
+  end
 end
