@@ -5,8 +5,8 @@ require "fibonacci/version"
 Gem::Specification.new do |s|
   s.name        = "fibonacci"
   s.version     = VERSION
-  s.authors     = ["Chaitanya Vellanki"]
-  s.email       = ["me@chaitanyavellanki.com"]
+  s.authors     = ["NagaChaitanya Vellanki"]
+  s.email       = ["nagachaitanya.vellanki.com"]
   s.homepage    = "http://github.com/chaitanyav/fibonacci"
   s.summary     = %q{Fibonacci}
   s.description = %q{A Ruby gem for exploring Fibonacci series}
