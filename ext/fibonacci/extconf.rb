@@ -1,2 +1,2 @@
 require 'mkmf'
-create_makefile('fibonacci/fibonacci')
+create_makefile('fibonacci_ext')

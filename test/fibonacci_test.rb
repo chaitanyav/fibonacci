@@ -1,7 +1,8 @@
+require_relative 'test_helper'
 require 'minitest/autorun'
 require 'fibonacci'
 
-class FibonacciTest < MiniTest::Unit::TestCase
+class FibonacciTest < Minitest::Test
   def setup
     @fib = Fibonacci.new
   end

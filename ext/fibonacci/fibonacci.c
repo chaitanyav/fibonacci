@@ -500,7 +500,7 @@ num_digits(VALUE self, VALUE n)
 }
 
 void
-Init_fibonacci(void)
+Init_fibonacci_ext(void)
 {
     id_plus = rb_intern("+");
     id_lte = rb_intern("<=");

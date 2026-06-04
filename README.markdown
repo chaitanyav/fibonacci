@@ -7,6 +7,30 @@ Installation:
 
     gem install fibonacci
 
+If you download the source and want to build locally:
+
+    bundle install
+    bundle exec rake test
+
+This will generate the extension Makefile, compile the native extension, and run the tests.
+
+If you want to build the extension manually:
+
+    cd ext/fibonacci
+    ruby extconf.rb
+    make
+
+-------------------------------------------------------------------------------
+Testing:
+-------------------------------------------------------------------------------
+
+From the project root:
+
+    bundle install
+    bundle exec rake test
+
+This is the recommended path for cloned source.
+
 -------------------------------------------------------------------------------
 Usage:
 -------------------------------------------------------------------------------
