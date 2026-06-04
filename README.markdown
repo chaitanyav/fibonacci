@@ -1,3 +1,5 @@
+[![Gem Version](https://badge.fury.io/rb/fibonacci.svg)](https://badge.fury.io/rb/fibonacci)
+
 Fibonacci is a Ruby gem written as a C-extension for exploring the Fibonacci series.
 ===============================================================================
 
